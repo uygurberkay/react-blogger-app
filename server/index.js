@@ -4,17 +4,24 @@ const mongoose = require('mongoose');
 const User = require('./models/User');
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
+require('dotenv').config()
 const app = express();
+
 
 /* It generates bcrypt password according to this string */
 const salt = bcrypt.genSaltSync(10);
 const secret = 'asdfasjdf3423sf';
+const PORT = process.env.PORT;
+const MONGODB = process.env.MONGO_DB;
 /* MIDDLEWARE */
 /* Cors Library help get post request withour CORS error from website */
 app.use(cors({credentials:true,origin:'http://localhost:3000'}));
 app.use(express.json())
+/* İts let us read cookies */
+app.use(cookieParser())
 
-mongoose.connect('mongodb+srv://uygurberkay0:123456Asd@cluster0.afusyu3.mongodb.net/')
+mongoose.connect(MONGODB)
 
 
 /* Register Post Request */
@@ -42,6 +49,7 @@ app.post('/login', async (req,res) => {
       // logged in
       jwt.sign({username,id:userDoc._id}, secret, {}, (err,token) => {
         if (err) throw err;
+        /* Login in functionality */
         res.cookie('token', token).json({
           id:userDoc._id,
           username,
@@ -52,7 +60,20 @@ app.post('/login', async (req,res) => {
     }
   });
 
+/* Get request for profile login check */
+app.get('/profile', (req,res) => {
+  const {token} = req.cookies;
+  jwt.verify(token, secret, {}, (err,info) => {
+    if (err) throw err;
+    res.json(info);
+  });
+});
 
-app.listen(4000, ()=> {
-    console.log(`Server is running at port : ${4000}`)
+app.post('/logout', (req,res) => {
+  /* Log out functionality */
+  res.cookie('token', '').json('ok');
+});
+  
+app.listen(PORT || 4000, ()=> {
+    console.log(`Server is running at port : ${PORT}`)
 });
