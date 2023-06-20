@@ -23,6 +23,7 @@ app.use(cors({credentials:true,origin:'http://localhost:3000'}));
 app.use(express.json())
 /* İts let us read cookies */
 app.use(cookieParser())
+app.use('/uploads', express.static(__dirname + '/uploads'));
 
 mongoose.connect(MONGODB)
 
@@ -83,17 +84,31 @@ app.post('/post',uploadMiddleware.single('file'), async (req,res) => {
   const ext = parts[parts.length -1];
   const newPath = path+'.'+ext;
   fs.renameSync(path,newPath);
-  /* Creates Post */
-  const {title,summary,content} = req.body;
-  const postDoc = await Post.create({
-    title,
-    summary,
-    content,
-    cover: newPath,
-  })
-  
-  res.json(postDoc);
+
+  const {token} = req.cookies;
+  jwt.verify(token, secret, {}, async (err,info) => {
+    if (err) throw err;
+    /* Creates Post */
+    const {title,summary,content} = req.body;
+    const postDoc = await Post.create({
+      title,
+      summary,
+      content,
+      cover: newPath,
+      author: info.id,
+    })
+    res.json(postDoc);
+  });
+
 });
+
+app.get('/post', async (req,res) => {
+  res.json(await Post.find()
+    .populate('author',['username'])
+    .sort({createdAt: -1})
+    .limit(20)
+    );
+}) 
   
 app.listen(PORT || 4000, ()=> {
     console.log(`Server is running at port : ${PORT}`)

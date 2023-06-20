@@ -34,7 +34,7 @@ export const Header = () => {
           {username && (
             <>
               <Link to="/create">Create new post</Link>
-              <a href=' ' onClick={logout}>Logout [ {username} ]</a>
+              <a href=' ' onClick={logout}>Logout ({username})</a>
             </>
           )}
           {/* Quest version */}
@@ -43,7 +43,7 @@ export const Header = () => {
               <Link to="/login">Login</Link>
               <Link to="/register">Register</Link>
             </>
-          )}
+         )}
         </nav>
     </header> 
   )

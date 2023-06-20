@@ -1,18 +1,24 @@
 import React from 'react'
+import {formatISO9075} from "date-fns";
+import {Link} from "react-router-dom";
 
-export const Post = () => {
+export const Post = ({_id,title,summary,cover,content,createdAt,author}) => {
   return (
     <div className="post">
-        <div className="image">
-          <img src="https://concorecdn.jollytur.com/concore/media/2018/52/Antalya-otelleri.jpg" alt="Antalya" />
+        <div className="image" >
+          <Link to={`/post/${_id}`}>
+            <img src={'http://localhost:4000/'+cover} width={200} height={280} alt=""/>
+          </Link>
         </div>
         <div className="texts">
-          <h2>ANTALYA’DA GEZİLECEK YERLER</h2>
+          <Link to={`/post/${_id}`}>
+           <h2>{title}</h2>
+          </Link>
           <p className="info">
-            <a href=" " className="author">Berkay Uygur</a>
-            <time>17.06.2023 17:57</time>
+            <a href=" " className="author">{author.username}</a>
+            <time>{formatISO9075(new Date(createdAt))}</time>
           </p>
-          <p className='summary'>'Dünyada 2 tür insan vardır: Antalya’yı sevenler ve sevmeyenler. Vıcık vıcık turist kaynayan sahillerin ve her şey dahilci akını etkisiyle ciddi önyargılarla gittiğimiz Antalya'dan, Türkiye'de yaşanacak en güzel yer Antalya diyerek döndük.'</p>
+          <p className='summary'>{summary}</p>
         </div>
       </div>
   )
