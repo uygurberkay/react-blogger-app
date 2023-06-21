@@ -13,6 +13,7 @@ export const Header = () => {
         setUserInfo(userInfo);
       });
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const logout = (e) => {
